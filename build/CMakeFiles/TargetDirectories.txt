@@ -1,0 +1,6 @@
+/home/ssiannas/code/websockets-cpp/build/CMakeFiles/web_sockets_cpp_test.dir
+/home/ssiannas/code/websockets-cpp/build/CMakeFiles/package.dir
+/home/ssiannas/code/websockets-cpp/build/CMakeFiles/package_source.dir
+/home/ssiannas/code/websockets-cpp/build/CMakeFiles/test.dir
+/home/ssiannas/code/websockets-cpp/build/CMakeFiles/edit_cache.dir
+/home/ssiannas/code/websockets-cpp/build/CMakeFiles/rebuild_cache.dir

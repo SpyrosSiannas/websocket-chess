@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/home/ssiannas/code/websockets-cpp/build",
-  "command": "/usr/bin/g++   -g -o CMakeFiles/web_sockets_cpp_test.dir/main.cpp.o -c /home/ssiannas/code/websockets-cpp/main.cpp",
-  "file": "/home/ssiannas/code/websockets-cpp/main.cpp"
-}
-]

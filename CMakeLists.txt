@@ -1,9 +1,13 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(web_sockets_cpp_test VERSION 0.1.0 LANGUAGES C CXX)
+project(ws_server VERSION 0.1.0 LANGUAGES C CXX)
 
 enable_testing()
-add_executable(web_sockets_cpp_test main.cpp)
-set_property(TARGET web_sockets_cpp_test PROPERTY CXX_STANDARD 20)
+
+file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/server/*.cpp")
+
+message(${SOURCES})
+add_executable(ws_server ${SOURCES} main.cpp)
+set_property(TARGET ws_server PROPERTY CXX_STANDARD 20)
 
 set(SUBMODULE_DIR ${CMAKE_SOURCE_DIR}/third-party)
 set(UWEBSOCKETS_DIR ${SUBMODULE_DIR}/uWebSockets)
@@ -20,6 +24,7 @@ ExternalProject_Add(
 )
 
 set (WEBSOCK_INCL ${UWEBSOCKETS_DIR}/src)
+set (SERVER_INCL ${CMAKE_SOURCE_DIR}/server)
 set (WEBSOCK_LIB ${UWEBSOCKETS_DIR}/uSockets/uSockets.a)
 set (USOCK_INCL ${UWEBSOCKETS_DIR}/uSockets/src)
 
@@ -29,12 +34,13 @@ else()
     add_compile_options(-Wall -Wextra -Werror-Wpedantic)
 endif()
 
-target_include_directories(web_sockets_cpp_test PRIVATE  ${WEBSOCK_INCL})
-target_include_directories(web_sockets_cpp_test PRIVATE  ${USOCK_INCL})
-target_include_directories(web_sockets_cpp_test PRIVATE  ${CMAKE_SOURCE_DIR})
+target_include_directories(ws_server PRIVATE  ${WEBSOCK_INCL})
+target_include_directories(ws_server PRIVATE  ${SERVER_INCL})
+target_include_directories(ws_server PRIVATE  ${USOCK_INCL})
+target_include_directories(ws_server PRIVATE  ${CMAKE_SOURCE_DIR})
 
-target_link_libraries(web_sockets_cpp_test z)
-target_link_libraries(web_sockets_cpp_test ${WEBSOCK_LIB})
+target_link_libraries(ws_server z)
+target_link_libraries(ws_server ${WEBSOCK_LIB})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

@@ -2,12 +2,22 @@
 #define SERVER_H
 #include <App.h>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 namespace server {
+// using only specific operator
+using std::string_view_literals::operator""sv;
+using UID = unsigned int;
+
+// To be replaced with a GameSession
+struct DummySession {
+  UID sessionId;
+};
+
 struct UserData {
-  unsigned int sessionId;
-  unsigned int uuid;
+  std::shared_ptr<DummySession> sessionPtr{nullptr};
+  UID uuid;
 };
 
 class Server final {
@@ -20,21 +30,17 @@ private:
   // TODO: Move from naive implementation to mt
   unsigned int generateUUID();
   void parseMessage(auto *ws, std::string_view message, uWS::OpCode opCode);
+  void onJoin(auto *ws, std::string_view message);
+  void onCreate(auto *ws);
 
 private:
-  enum class MessageType {
-    CREATE_SESSION,
-    JOIN_SESSION,
-    CLOSE_SESSION,
-  };
-  std::vector<unsigned int> sessions;
+  std::unordered_map<UID, std::shared_ptr<DummySession>> sessions;
   uWS::App _app{};
   unsigned int _port;
-  unsigned int _last_uuid{0};
-  const std::unordered_map<MessageType, std::string_view> msgHeads{
-      {{MessageType::CREATE_SESSION, "create"},
-       {MessageType::JOIN_SESSION, "join"},
-       {MessageType::CLOSE_SESSION, "close"}}};
+  UID _last_uuid{0};
+  static constexpr auto MSG_CREATE_SESSION{R"(create)"sv};
+  static constexpr auto MSG_JOIN_SESSION{R"(join)"sv};
+  static constexpr auto MSG_CLOSE_SESSION{R"(close)"sv};
 };
 } // namespace server
 

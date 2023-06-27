@@ -21,20 +21,35 @@ Server::Server(unsigned int port) {
 }
 
 void Server::parseMessage(auto *ws, std::string_view message,
-                          uWS::OpCode opCode) {
-  if (message.starts_with(msgHeads.at(MessageType::CREATE_SESSION))) {
-    auto sessionID = generateUUID();
-    sessions.push_back(sessionID);
-    ws->getUserData()->sessionId = sessionID;
-    ws->send(std::to_string(sessionID), opCode);
-  } else if (message.starts_with(msgHeads.at(MessageType::JOIN_SESSION))) {
-    auto sessID = ws->getUserData()->sessionId;
-    for (auto &id : sessions) {
-      if (id == sessID) {
-        ws->send("Joining Session", opCode);
-      }
-    }
+                          uWS::OpCode /*opCode*/) {
+  if (message.starts_with(MSG_CREATE_SESSION)) {
+    onCreate(ws);
+  } else if (message.starts_with(MSG_JOIN_SESSION)) {
+    onJoin(ws, message);
   }
+}
+
+void Server::onJoin(auto *ws, std::string_view message) {
+  auto sess{ws->getUserData()->sessionPtr};
+  UID sessID;
+  const size_t delimPos{message.find_first_of(' ')};
+  std::from_chars(message.data() + delimPos + 1,
+                  message.data() + message.size(), sessID);
+  if (auto it = sessions.find(sessID); it != sessions.end()) {
+    // auto team = Session->registerPlayer() (std::optional?)
+    auto msg = "Joined Session" + std::to_string(sessID);
+    ws->send(msg);
+  }
+}
+
+void Server::onCreate(auto *ws) {
+  const auto sessionId = generateUUID();
+  auto session{std::make_shared<DummySession>()};
+  session->sessionId = sessionId;
+  // id is unique
+  sessions.insert(std::make_pair(sessionId, session));
+  ws->getUserData()->sessionPtr = session;
+  ws->send(std::to_string(sessionId));
 }
 
 void Server::listen() {

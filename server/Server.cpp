@@ -1,6 +1,5 @@
 #include <iostream>
 #include <server/Server.hpp>
-#include <string>
 
 template <typename T> void ignore_unused(T &) {}
 
@@ -35,7 +34,7 @@ void Server::onJoin(auto *ws, std::string_view message) {
   const size_t delimPos{message.find_first_of(' ')};
   std::from_chars(message.data() + delimPos + 1,
                   message.data() + message.size(), sessID);
-  if (auto it = sessions.find(sessID); it != sessions.end()) {
+  if (auto it = _sessions.find(sessID); it != _sessions.end()) {
     // auto team = Session->registerPlayer() (std::optional?)
     auto msg = "Joined Session" + std::to_string(sessID);
     ws->send(msg);
@@ -47,7 +46,7 @@ void Server::onCreate(auto *ws) {
   auto session{std::make_shared<DummySession>()};
   session->sessionId = sessionId;
   // id is unique
-  sessions.insert(std::make_pair(sessionId, session));
+  _sessions.insert(std::make_pair(sessionId, session));
   ws->getUserData()->sessionPtr = session;
   ws->send(std::to_string(sessionId));
 }

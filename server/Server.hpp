@@ -1,12 +1,12 @@
 #ifndef SERVER_H
 #define SERVER_H
+
 #include <App.h>
 #include <string>
 #include <string_view>
 #include <unordered_map>
 
 namespace server {
-// using only specific operator
 using std::string_view_literals::operator""sv;
 using UID = unsigned int;
 
@@ -34,7 +34,7 @@ private:
   void onCreate(auto *ws);
 
 private:
-  std::unordered_map<UID, std::shared_ptr<DummySession>> sessions;
+  std::unordered_map<UID, std::shared_ptr<DummySession>> _sessions;
   uWS::App _app{};
   unsigned int _port;
   UID _last_uuid{0};

@@ -1,8 +1,10 @@
-#include "server/Server.hpp"
 #include <iostream>
+#include <server/Server.hpp>
 
-int main() {
-  server::Server srv{9001};
+int main(void) {
+  server::GameServer srv{9001};
+  server::HttpServer web{};
   srv.listen();
-  std::cout << "App Closed" << std::endl;
+  web.listen();
+  server::run();
 }

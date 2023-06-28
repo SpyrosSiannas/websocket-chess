@@ -1,10 +1,8 @@
 #include <iostream>
-#include <server/Server.hpp>
-
-template <typename T> void ignore_unused(T &) {}
+#include <server/GameServer.hpp>
 
 namespace server {
-Server::Server(unsigned int port) {
+GameServer::GameServer(unsigned int port) {
   _port = port;
   _app.ws<UserData>(
       "/*", {
@@ -19,8 +17,8 @@ Server::Server(unsigned int port) {
             });
 }
 
-void Server::parseMessage(auto *ws, std::string_view message,
-                          uWS::OpCode /*opCode*/) {
+void GameServer::parseMessage(auto *ws, std::string_view message,
+                              uWS::OpCode /*opCode*/) {
   if (message.starts_with(MSG_CREATE_SESSION)) {
     onCreate(ws);
   } else if (message.starts_with(MSG_JOIN_SESSION)) {
@@ -28,7 +26,7 @@ void Server::parseMessage(auto *ws, std::string_view message,
   }
 }
 
-void Server::onJoin(auto *ws, std::string_view message) {
+void GameServer::onJoin(auto *ws, std::string_view message) {
   auto sess{ws->getUserData()->sessionPtr};
   UID sessID;
   const size_t delimPos{message.find_first_of(' ')};
@@ -41,7 +39,7 @@ void Server::onJoin(auto *ws, std::string_view message) {
   }
 }
 
-void Server::onCreate(auto *ws) {
+void GameServer::onCreate(auto *ws) {
   const auto sessionId = generateUUID();
   auto session{std::make_shared<DummySession>()};
   session->sessionId = sessionId;
@@ -51,15 +49,13 @@ void Server::onCreate(auto *ws) {
   ws->send(std::to_string(sessionId));
 }
 
-void Server::listen() {
+void GameServer::listen() {
   _app.listen(_port, [this](auto *listen_socket) {
     if (listen_socket) {
       std::cout << "Listening on port: " << _port << std::endl;
     }
   });
-
-  _app.run();
 }
 
-unsigned int Server::generateUUID() { return ++_last_uuid; }
+unsigned int GameServer::generateUUID() { return ++_last_uuid; }
 } // namespace server

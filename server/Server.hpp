@@ -8,6 +8,7 @@ namespace server {
 
 // Runs the event loop
 static inline void run() { uWS::run(); };
+
 } // namespace server
 
 #endif // SERVER_H

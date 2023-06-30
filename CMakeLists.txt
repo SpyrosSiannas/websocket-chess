@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.0.0)
 project(ws_server VERSION 0.1.0 LANGUAGES C CXX)
 
 enable_testing()
+add_subdirectory(tests)
 
 file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/server/*.cpp")
 
-message(${SOURCES})
 add_executable(ws_server ${SOURCES} main.cpp)
 set_property(TARGET ws_server PROPERTY CXX_STANDARD 20)
 
@@ -13,15 +13,15 @@ set(SUBMODULE_DIR ${CMAKE_SOURCE_DIR}/third-party)
 set(UWEBSOCKETS_DIR ${SUBMODULE_DIR}/uWebSockets)
 
 include(ExternalProject)
-message(${UWEBSOCKETS_DIR})
 ExternalProject_Add(
-    uWebSockets
+    uSockets
     SOURCE_DIR ${UWEBSOCKETS_DIR}
     BUILD_COMMAND make -j8
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
     BUILD_IN_SOURCE 1
 )
+add_dependencies(ws_server uSockets)
 
 set (WEBSOCK_INCL ${UWEBSOCKETS_DIR}/src)
 set (SERVER_INCL ${CMAKE_SOURCE_DIR}/server)

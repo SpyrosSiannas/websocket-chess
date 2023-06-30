@@ -1,9 +1,9 @@
 #ifndef ASYNC_FILE_READER_H
 #define ASYNC_FILE_READER_H
 
-#include "Loop.h"
 #include <fstream>
 #include <string>
+#include <future>
 
 namespace server {
 namespace utils {
@@ -14,23 +14,46 @@ public:
 
     _inputStream.seekg(0, std::ios::end);
     _filesize = _inputStream.tellg();
-    // Allocate 1MB of cache
-    _cache.resize(1024 * 1024);
 
     _inputStream.seekg(0, std::ios::beg);
-    _inputStream.read(_cache.data(), _cache.length());
+    _inputStream.read(_cache, _cacheSize);
     _cacheOffset = 0;
     _cacheFull = true;
   }
 
+  void request(unsigned int offset, std::function<void(std::string_view)>&& callback) {
+	if (!_cacheFull) {
+		return;
+	}
+
+	std::async(std::launch::async, [this, callback, offset]() {
+		if (!_inputStream.good()) {
+			_inputStream.close();
+			_inputStream.open(_filename, std::ios::binary);
+		}
+
+		_inputStream.seekg(offset, _inputStream.beg);
+		_inputStream.read(_cache, _cacheSize);
+		_cacheOffset = offset;
+
+		int chunkSize{std::min<int>(_cacheSize, _filesize - offset)};
+
+		_cacheFull = true;
+		callback(std::string_view(_cache, chunkSize));
+	});
+  }
+  bool isCacheFull() {return _cacheFull;}
+  bool isStreamOpen() {return _inputStream.is_open();}
+  unsigned int getFileSize() {return _filesize;}
+
 private:
   std::ifstream _inputStream;
   std::string _filename;
-  std::string _cache;
+  static constexpr unsigned int _cacheSize{1024*1024};
+  char _cache[_cacheSize];
   unsigned int _filesize;
   unsigned int _cacheOffset;
   bool _cacheFull{false};
-  uWS::Loop *_eventLoop{uWS::Loop::get()};
 };
 
 } // namespace utils

@@ -3,8 +3,9 @@
 namespace server {
 
 HttpServer::HttpServer() {
-  _app.get("/*", [](auto *res, auto /**req*/) {
-    res->writeHeader("Content-Type", "text")->end("Yooo");
+  _app.get("/*", [this](auto *res, auto *req) {
+    res->writeStatus(uWS::HTTP_200_OK);
+    streamer->streamFile(res, req->getUrl());
   });
   _app.ws<UserData>("/*", {});
 }

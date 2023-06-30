@@ -13,14 +13,15 @@ TEST_F(AsyncFilereaderTests, TestFileOpen)
 	ASSERT_TRUE(fr.isStreamOpen());
 }
 
-TEST_F(AsyncFilereaderTests, TestChunk)
+TEST_F(AsyncFilereaderTests, TestRequest)
 {
 	fr.request(0, [this](auto chunk){
 		ASSERT_EQ(chunk ,test_html);
 	});
 }
 
-int main(int argc, char** argv){
-	::testing::InitGoogleTest(&argc, argv);
-	 return RUN_ALL_TESTS();
+TEST_F(AsyncFilereaderTests, TestPeek)
+{
+	std::string_view chunk = fr.peekCache(0);
+	ASSERT_EQ(chunk ,test_html);
 }

@@ -25,8 +25,8 @@ private:
   // TODO: Move from naive implementation to mt
   unsigned int generateUUID();
   void parseMessage(auto *ws, std::string_view message, uWS::OpCode opCode);
-  void onJoin(auto *ws, std::string_view message);
-  void onCreate(auto *ws);
+  void onJoin(auto *ws, std::string_view message, uWS::OpCode opCode);
+  void onCreate(auto *ws, uWS::OpCode opCode);
 
 private:
   std::unordered_map<UID, std::shared_ptr<DummySession>> _sessions;

@@ -4,6 +4,8 @@ project(ws_server VERSION 0.1.0 LANGUAGES C CXX)
 enable_testing()
 add_subdirectory(tests)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS True)
+
 file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/server/*.cpp")
 
 add_executable(ws_server ${SOURCES} main.cpp)

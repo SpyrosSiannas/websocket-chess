@@ -36,7 +36,7 @@ public:
       return;
     }
 
-    (void)std::async(std::launch::async, [this, callback, offset]() {
+    return (void)std::async(std::launch::async, [this, callback, offset]() {
       if (!_inputStream.good()) {
         _inputStream.close();
         _inputStream.open(_filename, std::ios::binary);

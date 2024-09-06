@@ -1,4 +1,3 @@
-#include <iostream>
 #include <server/Server.hpp>
 
 int main(void) {
